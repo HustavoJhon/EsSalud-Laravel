@@ -10,6 +10,8 @@ class Subsanacion extends Model
 {
     use HasFactory;
 
+    protected $table = 'subsanaciones';
+
     protected $fillable = [
         'procedure_id',
         'attempt_number',
