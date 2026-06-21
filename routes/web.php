@@ -69,10 +69,10 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('chat')->name('chat.')->group(function () {
         Route::get('/', [ChatController::class, 'index'])->name('index');
-        Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+        Route::post('/message', [ChatController::class, 'sendMessage'])->name('message');
         Route::get('/sessions', [ChatController::class, 'getSessions'])->name('sessions');
-        Route::get('/{session}/history', [ChatController::class, 'getHistory'])->name('history');
-        Route::delete('/{session}', [ChatController::class, 'deleteSession'])->name('delete');
-        Route::post('/messages/{message}/feedback', [ChatController::class, 'feedback'])->name('feedback');
+        Route::get('/history/{session}', [ChatController::class, 'getHistory'])->name('history');
+        Route::delete('/session/{session}', [ChatController::class, 'deleteSession'])->name('delete');
+        Route::post('/feedback/{message}', [ChatController::class, 'feedback'])->name('feedback');
     });
 });
