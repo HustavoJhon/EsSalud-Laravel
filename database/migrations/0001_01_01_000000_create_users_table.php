@@ -18,6 +18,16 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('dni', 20)->nullable();
+            $table->string('phone', 15)->nullable();
+            $table->string('full_name', 255)->nullable();
+            $table->string('role', 20)->default('ASEG');
+            $table->boolean('is_active')->default(true);
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('locked_until')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->string('last_login_ip', 45)->nullable();
+            $table->timestamp('password_changed_at')->nullable();
             $table->timestamps();
         });
 
