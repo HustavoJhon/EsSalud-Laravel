@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>@yield('title', 'EsSalud') - Plataforma de Trámites</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -18,87 +18,189 @@
             }
         }
     </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-enter { transition: transform 0.2s ease-out; }
+        .sidebar-leave { transition: transform 0.15s ease-in; }
+        @media (max-width: 768px) {
+            .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        }
+    </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen pb-16 md:pb-0" x-data="{ sidebarOpen: false }">
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-primary-800 text-white flex flex-col shadow-lg">
-            <div class="p-4 border-b border-primary-700">
-                <a href="{{ route('home') }}" class="text-2xl font-bold tracking-tight">EsSalud</a>
+    <!-- Mobile sidebar backdrop -->
+    <div x-cloak x-show="sidebarOpen" x-on:click="sidebarOpen = false"
+         x-transition:enter="transition-opacity ease-out duration-200"
+         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-in duration-150"
+         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden">
+    </div>
+
+    <!-- Sidebar -->
+    <aside x-cloak x-show="sidebarOpen" x-on:click.outside="sidebarOpen = false"
+           x-transition:enter="transition-transform ease-out duration-200"
+           x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition-transform ease-in duration-150"
+           x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+           class="fixed inset-y-0 left-0 z-50 w-72 bg-primary-800 text-white flex flex-col shadow-2xl md:hidden">
+        <div class="p-4 border-b border-primary-700 flex items-center justify-between">
+            <div>
+                <a href="{{ route('home') }}" class="text-2xl font-bold tracking-tight" x-on:click="sidebarOpen = false">EsSalud</a>
                 <p class="text-primary-200 text-sm mt-1">Plataforma de Trámites</p>
             </div>
-            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                <x-sidebar-link route="home" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1">
-                    Inicio
-                </x-sidebar-link>
-                <x-sidebar-link route="procedures.index" icon="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                    Trámites
-                </x-sidebar-link>
-                <x-sidebar-link route="procedures.create" icon="M12 6v6m0 0v6m0-6h6m-6 0H6">
-                    Nuevo Trámite
-                </x-sidebar-link>
-                <x-sidebar-link route="documents.index" icon="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                    Documentos
-                </x-sidebar-link>
-                @can('news.create')
-                <x-sidebar-link route="news.create" icon="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                    Nueva Noticia
-                </x-sidebar-link>
-                <x-sidebar-link route="chat.index" icon="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
-                    Chat
-                </x-sidebar-link>
-                <x-sidebar-link route="faq.index" icon="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                    FAQ
-                </x-sidebar-link>
-                <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
-                    Noticias
-                </x-sidebar-link>
-            </nav>
-            <div class="p-4 border-t border-primary-700">
-                <div class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
-                <span class="inline-block bg-primary-600 text-xs px-2 py-0.5 rounded mt-1">{{ Auth::user()->role }}</span>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-sm border-b border-gray-200">
-                <div class="flex items-center justify-between px-6 py-3">
-                    <div class="flex items-center space-x-4">
-                        <h1 class="text-lg font-semibold text-gray-800">@yield('page_title', 'Dashboard')</h1>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <a href="{{ route('profile') }}" class="text-sm text-gray-600 hover:text-primary-600">
-                            Mi Perfil
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="text-sm text-red-600 hover:text-red-800">
-                                Cerrar Sesión
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </header>
-
-            <main class="flex-1 overflow-y-auto p-6">
-                @if(session('status'))
-                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                        {{ session('status') }}
-                    </div>
-                @endif
-                @if($errors->any())
-                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        <ul class="list-disc ml-4">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                @yield('content')
-            </main>
+            <button x-on:click="sidebarOpen = false" class="text-white p-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <x-sidebar-link route="home" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" close="sidebarOpen = false">
+                Inicio
+            </x-sidebar-link>
+            <x-sidebar-link route="procedures.index" icon="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" close="sidebarOpen = false">
+                Trámites
+            </x-sidebar-link>
+            <x-sidebar-link route="procedures.create" icon="M12 6v6m0 0v6m0-6h6m-6 0H6" close="sidebarOpen = false">
+                Nuevo Trámite
+            </x-sidebar-link>
+            <x-sidebar-link route="documents.index" icon="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" close="sidebarOpen = false">
+                Documentos
+            </x-sidebar-link>
+            @can('news.create')
+            <x-sidebar-link route="news.create" icon="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" close="sidebarOpen = false">
+                Nueva Noticia
+            </x-sidebar-link>
+            @endcan
+            <x-sidebar-link route="chat.index" icon="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" close="sidebarOpen = false">
+                Chat
+            </x-sidebar-link>
+            <x-sidebar-link route="faq.index" icon="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" close="sidebarOpen = false">
+                FAQ
+            </x-sidebar-link>
+            <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" close="sidebarOpen = false">
+                Noticias
+            </x-sidebar-link>
+        </nav>
+        <div class="p-4 border-t border-primary-700">
+            <div class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
+            <span class="inline-block bg-primary-600 text-xs px-2 py-0.5 rounded mt-1">{{ Auth::user()->role }}</span>
+        </div>
+    </aside>
+
+    <!-- Desktop sidebar (always visible on md+) -->
+    <aside class="hidden md:flex w-64 bg-primary-800 text-white flex-col shadow-lg shrink-0">
+        <div class="p-4 border-b border-primary-700">
+            <a href="{{ route('home') }}" class="text-2xl font-bold tracking-tight">EsSalud</a>
+            <p class="text-primary-200 text-sm mt-1">Plataforma de Trámites</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <x-sidebar-link route="home" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1">Inicio</x-sidebar-link>
+            <x-sidebar-link route="procedures.index" icon="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">Trámites</x-sidebar-link>
+            <x-sidebar-link route="procedures.create" icon="M12 6v6m0 0v6m0-6h6m-6 0H6">Nuevo Trámite</x-sidebar-link>
+            <x-sidebar-link route="documents.index" icon="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">Documentos</x-sidebar-link>
+            @can('news.create')
+            <x-sidebar-link route="news.create" icon="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">Nueva Noticia</x-sidebar-link>
+            @endcan
+            <x-sidebar-link route="chat.index" icon="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">Chat</x-sidebar-link>
+            <x-sidebar-link route="faq.index" icon="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">FAQ</x-sidebar-link>
+            <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">Noticias</x-sidebar-link>
+        </nav>
+        <div class="p-4 border-t border-primary-700">
+            <div class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
+            <span class="inline-block bg-primary-600 text-xs px-2 py-0.5 rounded mt-1">{{ Auth::user()->role }}</span>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm border-b border-gray-200 shrink-0">
+            <div class="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Mobile hamburger -->
+                    <button x-on:click="sidebarOpen = true" class="md:hidden p-2 -ml-2 text-gray-600 hover:text-primary-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-base sm:text-lg font-semibold text-gray-800 truncate">@yield('page_title', 'Dashboard')</h1>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="{{ route('profile') }}" class="text-xs sm:text-sm text-gray-600 hover:text-primary-600 hidden sm:block">
+                        Mi Perfil
+                    </a>
+                    <a href="{{ route('profile') }}" class="md:hidden p-2 text-gray-600 hover:text-primary-600" title="Mi Perfil">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-xs sm:text-sm text-red-600 hover:text-red-800">
+                            Salir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-3 sm:p-6">
+            @if(session('status'))
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-sm sm:text-base">
+                    {{ session('status') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm sm:text-base">
+                    <ul class="list-disc ml-4">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @yield('content')
+        </main>
     </div>
+    </div>
+
+    <!-- Mobile bottom navigation -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-30 flex items-center justify-around py-2 safe-area-bottom">
+        <a href="{{ route('home') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('home') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"></path>
+            </svg>
+            Inicio
+        </a>
+        <a href="{{ route('procedures.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('procedures.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Trámites
+        </a>
+        <a href="{{ route('chat.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('chat.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            </svg>
+            Chat
+        </a>
+        <a href="{{ route('faq.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('faq.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            FAQ
+        </a>
+        <a href="{{ route('news.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('news.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+            Noticias
+        </a>
+    </nav>
+
     @stack('scripts')
 </body>
 </html>

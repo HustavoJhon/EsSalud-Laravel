@@ -1,13 +1,14 @@
-@props(['route', 'icon'])
+@props(['route', 'icon', 'close' => null])
 
 @php
-    $isActive = request()->routeIs($route);
+    $isActive = request()->routeIs($route . '*') || request()->routeIs($route);
     $classes = $isActive
         ? 'bg-primary-700 text-white'
         : 'text-primary-100 hover:bg-primary-700 hover:text-white';
 @endphp
 
-<a href="{{ route($route) }}" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ $classes }}">
+<a href="{{ route($route) }}" @if($close) x-on:click="{{ $close }}" @endif
+   class="flex items-center space-x-3 px-3 py-3 md:py-2 rounded-lg text-sm font-medium transition-colors {{ $classes }}">
     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"></path>
     </svg>
