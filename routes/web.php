@@ -8,6 +8,14 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProcedureController;
 use Illuminate\Support\Facades\Route;
 
+// Landing page (public, shows different content for auth/guest)
+Route::get('/', function () {
+    if (Auth::check()) {
+        return view('home');
+    }
+    return view('landing');
+})->name('home');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -26,10 +34,6 @@ Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/news/{news}', [NewsController::class, 'show'])->name('news.show');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
-
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile');
