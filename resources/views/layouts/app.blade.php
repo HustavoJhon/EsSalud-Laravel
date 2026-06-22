@@ -28,7 +28,8 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen pb-16 md:pb-0" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-50 min-h-screen pb-16 md:pb-0" x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
+      @sidebar-toggle.window="sidebarCollapsed = !sidebarCollapsed">
     <div class="flex h-screen overflow-hidden">
     <!-- Mobile sidebar backdrop -->
     <div x-cloak x-show="sidebarOpen" x-on:click="sidebarOpen = false"
@@ -91,13 +92,28 @@
         </div>
     </aside>
 
-    <!-- Desktop sidebar (always visible on md+) -->
-    <aside class="hidden md:flex w-64 bg-primary-800 text-white flex-col shadow-lg shrink-0">
-        <div class="p-4 border-b border-primary-700">
-            <a href="{{ route('home') }}" class="text-2xl font-bold tracking-tight">EsSalud</a>
-            <p class="text-primary-200 text-sm mt-1">Plataforma de Trámites</p>
+    <!-- Desktop sidebar (collapsible on md+) -->
+    <aside class="hidden md:flex flex-col bg-primary-800 text-white shadow-lg shrink-0 transition-all duration-300"
+           :class="sidebarCollapsed ? 'w-16' : 'w-64'">
+        <!-- Header -->
+        <div class="flex items-center border-b border-primary-700" :class="sidebarCollapsed ? 'p-3 justify-center' : 'p-4 justify-between'">
+            <div x-show="!sidebarCollapsed">
+                <a href="{{ route('home') }}" class="text-2xl font-bold tracking-tight">EsSalud</a>
+                <p class="text-primary-200 text-sm mt-1">Plataforma</p>
+            </div>
+            <button @click="sidebarCollapsed = !sidebarCollapsed"
+                    class="text-primary-200 hover:text-white transition-colors p-1 rounded hover:bg-primary-700 shrink-0"
+                    :class="sidebarCollapsed ? '' : ''"
+                    title="Colapsar menú">
+                <svg class="w-5 h-5 transition-transform duration-300" :class="sidebarCollapsed ? 'rotate-180' : ''"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                </svg>
+            </button>
         </div>
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto py-4 space-y-1" :class="sidebarCollapsed ? 'px-2' : 'px-3'">
             <x-sidebar-link route="home" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1">Inicio</x-sidebar-link>
             <x-sidebar-link route="procedures.index" icon="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">Trámites</x-sidebar-link>
             <x-sidebar-link route="procedures.create" icon="M12 6v6m0 0v6m0-6h6m-6 0H6">Nuevo Trámite</x-sidebar-link>
@@ -109,9 +125,16 @@
             <x-sidebar-link route="faq.index" icon="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">FAQ</x-sidebar-link>
             <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">Noticias</x-sidebar-link>
         </nav>
-        <div class="p-4 border-t border-primary-700">
-            <div class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
-            <span class="inline-block bg-primary-600 text-xs px-2 py-0.5 rounded mt-1">{{ Auth::user()->role }}</span>
+
+        <!-- Footer -->
+        <div class="border-t border-primary-700" :class="sidebarCollapsed ? 'p-2' : 'p-4'">
+            <div x-show="!sidebarCollapsed" class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
+            <span x-show="!sidebarCollapsed" class="inline-block bg-primary-600 text-xs px-2 py-0.5 rounded mt-1">{{ Auth::user()->role }}</span>
+            <div x-show="sidebarCollapsed" class="flex justify-center" title="{{ Auth::user()->full_name ?? Auth::user()->name }}">
+                <svg class="w-6 h-6 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
         </div>
     </aside>
 
