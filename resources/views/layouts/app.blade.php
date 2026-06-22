@@ -85,6 +85,14 @@
             <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" close="sidebarOpen = false">
                 Noticias
             </x-sidebar-link>
+            @can('manage-users')
+            <x-sidebar-link route="admin.users.index" icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" close="sidebarOpen = false">
+                Usuarios
+            </x-sidebar-link>
+            <x-sidebar-link route="admin.roles.index" icon="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" close="sidebarOpen = false">
+                Roles
+            </x-sidebar-link>
+            @endcan
         </nav>
         <div class="p-4 border-t border-primary-700">
             <div class="text-sm text-primary-200 truncate">{{ Auth::user()->full_name ?? Auth::user()->name }}</div>
@@ -124,6 +132,10 @@
             <x-sidebar-link route="chat.index" icon="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">Chat</x-sidebar-link>
             <x-sidebar-link route="faq.index" icon="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">FAQ</x-sidebar-link>
             <x-sidebar-link route="news.index" icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">Noticias</x-sidebar-link>
+            @can('manage-users')
+            <x-sidebar-link route="admin.users.index" icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">Usuarios</x-sidebar-link>
+            <x-sidebar-link route="admin.roles.index" icon="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">Roles</x-sidebar-link>
+            @endcan
         </nav>
 
         <!-- Footer -->

@@ -36,6 +36,8 @@ class RolePermissionSeeder extends Seeder
             'user.create',
             'user.update',
             'user.delete',
+            'manage-users',
+            'manage-roles',
             'chat.use',
             'report.view',
             'settings.manage',

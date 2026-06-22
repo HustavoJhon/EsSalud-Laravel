@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DocumentController;
@@ -31,7 +33,6 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::post('/faq/{faq}/helpful', [FaqController::class, 'helpful'])->name('faq.helpful');
 Route::post('/faq/{faq}/not-helpful', [FaqController::class, 'notHelpful'])->name('faq.not-helpful');
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
-Route::get('/news/{news}', [NewsController::class, 'show'])->name('news.show');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -79,4 +80,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/session/{session}', [ChatController::class, 'deleteSession'])->name('delete');
         Route::post('/feedback/{message}', [ChatController::class, 'feedback'])->name('feedback');
     });
+
+    // Admin routes (SADM only)
+    Route::prefix('admin')->name('admin.')->middleware('can:manage-users')->group(function () {
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('roles', RoleController::class)->except(['show']);
+    });
 });
+
+// Public news detail — defined last to avoid conflict with /news/create
+Route::get('/news/{news}', [NewsController::class, 'show'])->name('news.show');
