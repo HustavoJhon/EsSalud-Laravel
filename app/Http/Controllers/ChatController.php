@@ -82,6 +82,7 @@ class ChatController extends Controller
             'sources' => $response['sources'] ?? [],
             'confidence' => $response['confidence'] ?? 1,
             'latency_ms' => $response['latency_ms'] ?? 0,
+            'type' => $response['type'] ?? 'rag',
         ]);
     }
 
