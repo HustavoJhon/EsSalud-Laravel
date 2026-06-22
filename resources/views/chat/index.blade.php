@@ -156,10 +156,17 @@
                         class="px-4 py-2.5 text-sm md:text-base shadow-sm">
                         <div x-text="msg.content" class="whitespace-pre-wrap break-words"></div>
                         <div x-show="msg.sources && msg.sources.length" class="mt-2 pt-2 border-t border-gray-400/20">
-                            <div class="text-xs font-medium mb-1 opacity-70">Fuentes:</div>
-                            <template x-for="source in msg.sources" :key="source.document_name || source.title">
-                                <div class="text-xs opacity-60" x-text="source.document_name || source.title"></div>
-                            </template>
+                            <div class="text-xs font-medium mb-1.5 opacity-70">Fuentes:</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <template x-for="source in msg.sources" :key="source.title">
+                                    <button @click="quickAsk(source.title)"
+                                        class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition-colors text-left max-w-full"
+                                        :class="msg.role === 'user' ? 'text-white border border-white/30' : 'text-primary-700 bg-primary-50 hover:bg-primary-100 border border-primary-200'"
+                                        :title="source.title">
+                                        <span x-text="source.title" class="line-clamp-1"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                         <div x-show="msg.role === 'assistant' && msg.message_id && msg.content" class="mt-2 flex items-center gap-3">
                             <button @click="feedback(msg.message_id, true)" class="text-xs text-gray-400 hover:text-green-500 flex items-center gap-1 transition-colors">
