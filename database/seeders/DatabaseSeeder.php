@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             ProcedureTypeStatusSeeder::class,
             FaqCategorySeeder::class,
             FaqSeeder::class,
+            FaqSeederV2::class,
         ]);
     }
 }
