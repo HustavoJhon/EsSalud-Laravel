@@ -41,6 +41,7 @@
                         <span class="font-extrabold text-xl text-gray-900">EsSalud</span>
                     </a>
                     <nav class="hidden md:flex items-center gap-1">
+                        <a href="{{ route('chat.index') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('chat.*') ? 'text-primary-600 bg-primary-50' : '' }}">Chat</a>
                         <a href="{{ route('faq.index') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('faq.*') ? 'text-primary-600 bg-primary-50' : '' }}">FAQ</a>
                         <a href="{{ route('news.index') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('news.*') ? 'text-primary-600 bg-primary-50' : '' }}">Noticias</a>
                     </nav>
@@ -80,6 +81,7 @@
                     <span class="font-bold text-white">EsSalud</span>
                 </div>
                 <div class="flex items-center gap-6 text-sm">
+                    <a href="{{ route('chat.index') }}" class="hover:text-white transition-colors">Chat</a>
                     <a href="{{ route('faq.index') }}" class="hover:text-white transition-colors">FAQ</a>
                     <a href="{{ route('news.index') }}" class="hover:text-white transition-colors">Noticias</a>
                     @guest

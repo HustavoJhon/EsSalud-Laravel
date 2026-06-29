@@ -1,6 +1,8 @@
-@extends('layouts.app')
+@extends(Auth::check() ? 'layouts.app' : 'layouts.public')
 @section('title', 'Chat de Ayuda')
+@if(Auth::check())
 @section('page_title', 'Chatbot IA')
+@endif
 @section('content')
 <div class="flex h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] gap-0 md:gap-4"
      x-data="chatApp()"
@@ -114,6 +116,13 @@
                 </svg>
             </button>
         </div>
+
+        @guest
+        <div class="mx-4 md:mx-6 mt-3 bg-amber-50 border border-amber-200 text-amber-700 text-xs px-3 py-2 rounded-lg flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 4.636z"></path></svg>
+            <span>Estás usando el chat como invitado. <a href="{{ route('login') }}" class="font-medium underline hover:text-amber-800">Inicia sesión</a> para guardar tus conversaciones.</span>
+        </div>
+        @endguest
 
         {{-- Empty state --}}
         <div x-show="messages.length === 0 && !loading" class="flex-1 flex flex-col items-center justify-center p-6 text-center">

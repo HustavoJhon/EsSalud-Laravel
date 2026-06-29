@@ -32,6 +32,7 @@
                 @else
                     <a href="{{ route('register') }}" class="w-full sm:w-auto bg-white text-primary-700 px-8 py-3.5 rounded-xl font-semibold hover:bg-primary-50 transition-colors shadow-lg text-center">Crear Cuenta Gratis</a>
                     <a href="{{ route('login') }}" class="w-full sm:w-auto bg-primary-500 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-primary-400 transition-colors border border-primary-400 text-center">Iniciar Sesión</a>
+                    <a href="{{ route('chat.index') }}" class="w-full sm:w-auto bg-white/20 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-white/30 transition-colors border border-white/40 text-center">Chatbot IA</a>
                 @endauth
             </div>
         </div>
