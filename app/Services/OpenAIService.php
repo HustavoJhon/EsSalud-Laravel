@@ -43,11 +43,14 @@ class OpenAIService
 
         $client = new \GuzzleHttp\Client();
 
-        $systemMessage = "Eres un asistente virtual de EsSalud. Ayudas a los usuarios con preguntas sobre trámites, afiliación, citas médicas, certificados, reembolsos y otros servicios. Sé preciso, profesional y amable. Responde siempre en español.";
+        $systemMessage = "Eres un asistente virtual de EsSalud. Ayudas a los usuarios con preguntas sobre trámites, afiliación, subsidios, citas médicas, certificados, reembolsos y otros servicios. Sé preciso, profesional y amable. Responde siempre en español.";
 
         if (!empty($context)) {
             $contextStr = implode("\n\n", array_map(fn($c) => $c['content'] ?? $c, $context));
-            $systemMessage .= "\n\nInformación relevante de la base de conocimiento:\n" . $contextStr;
+            $systemMessage .= "\n\nA continuación información de la base de conocimiento de EsSalud que puedes usar para responder:\n" . $contextStr;
+            $systemMessage .= "\n\nImportante: Responde SOLO con la información proporcionada arriba. Si la información no responde exactamente a la pregunta del usuario, indícale amablemente que no tienes esa información y sugiérele consultar en la sección de Trámites o llamar a EsSalud al 411-8000. NO inventes montos, requisitos ni procedimientos.";
+        } else {
+            $systemMessage .= "\n\nNo tengo información específica sobre esta consulta. Responde amablemente indicando que no tienes información suficiente y sugiere al usuario consultar la sección de FAQ, Trámites, o llamar a EsSalud al 411-8000.";
         }
 
         array_unshift($messages, ['role' => 'system', 'content' => $systemMessage]);
@@ -88,6 +91,9 @@ class OpenAIService
 
         $responses = [
             'afiliacion' => 'Para afiliarte a EsSalud necesitas presentar tu DNI vigente y el certificado de trabajo emitido por tu empleador. Puedes iniciar el trámite en línea desde la sección de Procedimientos seleccionando "Afiliación".',
+            'lactancia' => 'El subsidio por lactancia es un beneficio económico que se otorga a la madre asegurada por el periodo de descanso por lactancia. El monto equivale al 100% de tu remuneración mensual durante 90 días. Para cobrarlo, debes presentar el certificado de nacimiento del menor, DNI de la madre y del menor, y solicitar el trámite en la sección Trámites > Subsidio por Lactancia.',
+            'maternidad' => 'El subsidio por maternidad es un beneficio económico para madres aseguradas. El descanso prenatal es de 45 días y el postnatal de 45 días (90 en total), recibiendo el 100% de tu remuneración. Debes presentar el certificado médico de embarazo, DNI y solicitar el trámite en Procedimientos.',
+            'incapacidad' => 'El subsidio por incapacidad temporal (ITT) se otorga cuando no puedes trabajar por enfermedad o accidente. Debes presentar el certificado médico que acredite la incapacidad, DNI, y solicitarlo en Trámites > Subsidio por Incapacidad Temporal. Recibirás un porcentaje de tu remuneración mientras dure la incapacidad, según evaluación médica.',
             'cita' => 'Puedes solicitar una cita médica ingresando a Trámites > Citas Médicas, donde seleccionarás la especialidad y fecha disponible.',
             'reembolso' => 'Para solicitar un reembolso debes presentar comprobantes de pago originales, informe médico y formulario FO-003. El plazo máximo es de 30 días hábiles.',
             'certificado' => 'Los certificados médicos se solicitan por el trámite "Certificados Médicos". Debes adjuntar DNI, solicitud formal e informe médico.',

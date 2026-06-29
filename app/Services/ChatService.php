@@ -148,10 +148,10 @@ class ChatService
                 }
             }
 
-            // Score: combine both directions, weight keyword matches higher
+                // Score: combine both directions, weight keyword matches higher
             $kwTotal = count($keywords);
-            $kwScore = $kwTotal > 0 ? ($kwMatches / $kwTotal) * 0.6 : 0;
-            $qScore = count($expandedWords) > 0 ? ($qMatches / count($expandedWords)) * 0.4 : 0;
+            $kwScore = $kwTotal > 0 ? ($kwMatches / $kwTotal) * 0.7 : 0;
+            $qScore = count($expandedWords) > 0 ? ($qMatches / count($expandedWords)) * 0.3 : 0;
             $score = $kwScore + $qScore;
 
             if ($score > $bestScore) {
@@ -202,7 +202,7 @@ class ChatService
                     $matches++;
                 }
             }
-            if ($matches >= 2 || (mb_strpos($questionLower, mb_strtolower(mb_substr($faq->question, 0, 20))) !== false)) {
+            if ($matches >= 3) {
                 $scoredFaqs[] = [
                     'faq' => $faq,
                     'matches' => $matches,
@@ -216,11 +216,13 @@ class ChatService
 
         foreach ($topFaqs as $scored) {
             $faq = $scored['faq'];
+            $relevance = $scored['matches'] / max(count($expandedWords), 1);
+            if ($relevance < 0.15) continue;
             $results[] = [
                 'content' => "Pregunta: {$faq->question}\nRespuesta: {$faq->answer}",
                 'title' => $faq->question,
                 'url' => null,
-                'score' => $scored['matches'] / max(count($expandedWords), 1),
+                'score' => $relevance,
             ];
         }
 
