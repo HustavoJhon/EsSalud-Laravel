@@ -17,13 +17,32 @@ class ChatController extends Controller
         $this->chatService = $chatService;
     }
 
+    protected function guestId(): ?string
+    {
+        return session()->getId();
+    }
+
+    protected function userId()
+    {
+        return Auth::id();
+    }
+
+    protected function ownerId(): ?string
+    {
+        return Auth::id() ?? $this->guestId();
+    }
+
     public function index()
     {
-        $sessions = ChatSession::where('user_id', Auth::id())
-            ->where('is_active', true)
-            ->latest()
-            ->get();
+        $query = ChatSession::where('is_active', true);
 
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('guest_id', session()->getId());
+        }
+
+        $sessions = $query->latest()->get();
         $activeSession = $sessions->first();
 
         return view('chat.index', compact('sessions', 'activeSession'));
@@ -39,15 +58,25 @@ class ChatController extends Controller
         $sessionId = $validated['session_id'] ?? null;
 
         if (!$sessionId) {
-            $session = ChatSession::create([
-                'user_id' => Auth::id(),
+            $data = [
                 'title' => mb_substr($validated['message'], 0, 100),
                 'message_count' => 0,
-            ]);
+            ];
+
+            if (Auth::check()) {
+                $data['user_id'] = Auth::id();
+            } else {
+                $data['guest_id'] = session()->getId();
+            }
+
+            $session = ChatSession::create($data);
             $sessionId = $session->id;
         } else {
             $session = ChatSession::findOrFail($sessionId);
-            if ($session->user_id !== Auth::id()) {
+            if (!Auth::check() && $session->guest_id !== session()->getId()) {
+                abort(403);
+            }
+            if (Auth::check() && $session->user_id !== Auth::id()) {
                 abort(403);
             }
         }
@@ -61,7 +90,7 @@ class ChatController extends Controller
 
         $response = $this->chatService->processQuestion($session, $validated['message']);
 
-        ChatMessage::create([
+        $message = ChatMessage::create([
             'session_id' => $sessionId,
             'role' => 'assistant',
             'content' => $response['answer'],
@@ -83,22 +112,30 @@ class ChatController extends Controller
             'confidence' => $response['confidence'] ?? 1,
             'latency_ms' => $response['latency_ms'] ?? 0,
             'type' => $response['type'] ?? 'rag',
+            'message_id' => $message->id,
         ]);
     }
 
     public function getSessions()
     {
-        $sessions = ChatSession::where('user_id', Auth::id())
-            ->where('is_active', true)
-            ->latest()
-            ->get();
+        $query = ChatSession::where('is_active', true);
 
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('guest_id', session()->getId());
+        }
+
+        $sessions = $query->latest()->get();
         return response()->json($sessions);
     }
 
     public function getHistory(ChatSession $session)
     {
-        if ($session->user_id !== Auth::id()) {
+        if (!Auth::check() && $session->guest_id !== session()->getId()) {
+            abort(403);
+        }
+        if (Auth::check() && $session->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -108,7 +145,10 @@ class ChatController extends Controller
 
     public function deleteSession(ChatSession $session)
     {
-        if ($session->user_id !== Auth::id()) {
+        if (!Auth::check() && $session->guest_id !== session()->getId()) {
+            abort(403);
+        }
+        if (Auth::check() && $session->user_id !== Auth::id()) {
             abort(403);
         }
 
@@ -118,7 +158,11 @@ class ChatController extends Controller
 
     public function feedback(Request $request, ChatMessage $message)
     {
-        if ($message->session->user_id !== Auth::id()) {
+        $session = $message->session;
+        if (!Auth::check() && $session->guest_id !== session()->getId()) {
+            abort(403);
+        }
+        if (Auth::check() && $session->user_id !== Auth::id()) {
             abort(403);
         }
 
