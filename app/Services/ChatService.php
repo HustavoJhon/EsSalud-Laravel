@@ -44,7 +44,7 @@ class ChatService
 
         // 1. Fast keyword match on FAQs
         $faqResult = $this->matchFaqKeywords($question);
-        if ($faqResult && $faqResult['score'] >= 0.12) {
+        if ($faqResult && $faqResult['score'] >= 0.35) {
             return [
                 'answer' => $faqResult['answer'],
                 'sources' => [['title' => $faqResult['question'], 'url' => null, 'score' => round($faqResult['score'], 2)]],
@@ -130,8 +130,8 @@ class ChatService
                 $kw = mb_strtolower($keyword);
                 if (mb_strpos($questionLower, $kw) !== false) {
                     $kwMatches++;
+                    continue;
                 }
-                // Also check expanded words
                 foreach ($expandedWords as $ew) {
                     if ($ew === $kw || (mb_strlen($kw) >= 4 && mb_strpos($ew, $kw) !== false)) {
                         $kwMatches++;
@@ -150,7 +150,9 @@ class ChatService
 
                 // Score: combine both directions, weight keyword matches higher
             $kwTotal = count($keywords);
-            $kwScore = $kwTotal > 0 ? ($kwMatches / $kwTotal) * 0.7 : 0;
+            // Penalizar FAQs con pocas keywords (evita matches con keywords genéricas como "subsidio")
+            $keywordRichness = min($kwTotal / 3, 1);
+            $kwScore = $kwTotal > 0 ? ($kwMatches / $kwTotal) * 0.7 * $keywordRichness : 0;
             $qScore = count($expandedWords) > 0 ? ($qMatches / count($expandedWords)) * 0.3 : 0;
             $score = $kwScore + $qScore;
 
