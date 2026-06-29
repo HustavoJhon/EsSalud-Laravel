@@ -13,6 +13,7 @@ class ChatSession extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_id',
         'title',
         'is_active',
         'message_count',
