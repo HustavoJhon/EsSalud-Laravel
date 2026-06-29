@@ -34,6 +34,16 @@ Route::post('/faq/{faq}/helpful', [FaqController::class, 'helpful'])->name('faq.
 Route::post('/faq/{faq}/not-helpful', [FaqController::class, 'notHelpful'])->name('faq.not-helpful');
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 
+// Chat — accessible without authentication (guests use session-based tracking)
+Route::prefix('chat')->name('chat.')->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('index');
+    Route::post('/message', [ChatController::class, 'sendMessage'])->name('message');
+    Route::get('/sessions', [ChatController::class, 'getSessions'])->name('sessions');
+    Route::get('/history/{session}', [ChatController::class, 'getHistory'])->name('history');
+    Route::delete('/session/{session}', [ChatController::class, 'deleteSession'])->name('delete');
+    Route::post('/feedback/{message}', [ChatController::class, 'feedback'])->name('feedback');
+});
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -70,15 +80,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/{news}/edit', [NewsController::class, 'edit'])->name('edit');
         Route::put('/{news}', [NewsController::class, 'update'])->name('update');
         Route::delete('/{news}', [NewsController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('chat')->name('chat.')->group(function () {
-        Route::get('/', [ChatController::class, 'index'])->name('index');
-        Route::post('/message', [ChatController::class, 'sendMessage'])->name('message');
-        Route::get('/sessions', [ChatController::class, 'getSessions'])->name('sessions');
-        Route::get('/history/{session}', [ChatController::class, 'getHistory'])->name('history');
-        Route::delete('/session/{session}', [ChatController::class, 'deleteSession'])->name('delete');
-        Route::post('/feedback/{message}', [ChatController::class, 'feedback'])->name('feedback');
     });
 
     // Admin routes (SADM only)
