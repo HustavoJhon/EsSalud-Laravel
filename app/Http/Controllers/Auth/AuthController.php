@@ -95,7 +95,7 @@ class AuthController extends Controller
         $user->assignRole('ASEG');
         Auth::login($user);
 
-        return redirect()->route('home');
+        return redirect()->route('chat.index');
     }
 
     public function logout(Request $request)
