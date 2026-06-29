@@ -45,12 +45,12 @@ class OpenAIService
 
         $systemMessage = "Eres un asistente virtual de EsSalud. Ayudas a los usuarios con preguntas sobre trámites, afiliación, subsidios, citas médicas, certificados, reembolsos y otros servicios. Sé preciso, profesional y amable. Responde siempre en español.";
 
+        $systemMessage .= "\n\nUsa la conversación anterior para entender el contexto de las preguntas del usuario.";
+
         if (!empty($context)) {
             $contextStr = implode("\n\n", array_map(fn($c) => $c['content'] ?? $c, $context));
-            $systemMessage .= "\n\nA continuación información de la base de conocimiento de EsSalud que puedes usar para responder:\n" . $contextStr;
-            $systemMessage .= "\n\nImportante: Responde SOLO con la información proporcionada arriba. Si la información no responde exactamente a la pregunta del usuario, indícale amablemente que no tienes esa información y sugiérele consultar en la sección de Trámites o llamar a EsSalud al 411-8000. NO inventes montos, requisitos ni procedimientos.";
-        } else {
-            $systemMessage .= "\n\nNo tengo información específica sobre esta consulta. Responde amablemente indicando que no tienes información suficiente y sugiere al usuario consultar la sección de FAQ, Trámites, o llamar a EsSalud al 411-8000.";
+            $systemMessage .= "\n\nInformación de la base de conocimiento de EsSalud:\n" . $contextStr;
+            $systemMessage .= "\n\nResponde basándote en esta información cuando sea relevante. Si la información no corresponde a la pregunta, indícalo amablemente y sugiere consultar Trámites o llamar al 411-8000. NO inventes montos, requisitos ni procedimientos.";
         }
 
         array_unshift($messages, ['role' => 'system', 'content' => $systemMessage]);

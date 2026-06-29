@@ -90,7 +90,7 @@ class ChatService
 
     protected function matchFaqKeywords(string $question): ?array
     {
-        $questionLower = mb_strtolower($question);
+        $questionLower = $this->normalizeAccents(mb_strtolower($question));
         $questionWords = $this->extractWords($questionLower);
 
         // Expand question with synonyms
@@ -122,12 +122,12 @@ class ChatService
             }
             if (empty($keywords)) continue;
 
-            $faqQuestionLower = mb_strtolower($faq->question);
+            $faqQuestionLower = $this->normalizeAccents(mb_strtolower($faq->question));
 
             // A) Keywords → Question: how many keywords match the user question
             $kwMatches = 0;
             foreach ($keywords as $keyword) {
-                $kw = mb_strtolower($keyword);
+                $kw = $this->normalizeAccents(mb_strtolower($keyword));
                 if (mb_strpos($questionLower, $kw) !== false) {
                     $kwMatches++;
                     continue;
@@ -169,6 +169,13 @@ class ChatService
         return $bestFaq;
     }
 
+    protected function normalizeAccents(string $text): string
+    {
+        $from = ['á','é','í','ó','ú','ü','ñ','Á','É','Í','Ó','Ú','Ü','Ñ'];
+        $to   = ['a','e','i','o','u','u','n','A','E','I','O','U','U','N'];
+        return str_replace($from, $to, $text);
+    }
+
     protected function extractWords(string $text): array
     {
         preg_match_all('/[a-záéíóúñ]{3,}/u', $text, $matches);
@@ -178,7 +185,7 @@ class ChatService
     protected function searchContext(string $question): array
     {
         $results = [];
-        $questionLower = mb_strtolower($question);
+        $questionLower = $this->normalizeAccents(mb_strtolower($question));
         $questionWords = $this->extractWords($questionLower);
 
         // Expand with synonyms
@@ -192,13 +199,13 @@ class ChatService
             }
         }
 
-        // FAQ search — only include if at least 2 words match the question
+        // FAQ search — only include if at least 3 words match
         $faqs = Faq::where('is_active', true)->get(['id','question','answer','keywords']);
 
         $scoredFaqs = [];
         foreach ($faqs as $faq) {
             $matches = 0;
-            $faqLower = mb_strtolower($faq->question);
+            $faqLower = $this->normalizeAccents(mb_strtolower($faq->question));
             foreach ($expandedWords as $w) {
                 if (mb_strpos($faqLower, $w) !== false) {
                     $matches++;
