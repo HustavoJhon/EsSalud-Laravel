@@ -3,7 +3,10 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "cap:sync": "cap sync",
+        "cap:open": "cap open android",
+        "cap:run": "cap run android"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",
@@ -12,9 +15,13 @@
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.4.47",
         "tailwindcss": "^3.4.13",
+        "typescript": "^6.0.3",
         "vite": "^6.0.11"
     },
     "dependencies": {
+        "@capacitor/android": "^8.4.1",
+        "@capacitor/cli": "^8.4.1",
+        "@capacitor/core": "^8.4.1",
         "alpinejs": "^3.15.12"
     }
 }
