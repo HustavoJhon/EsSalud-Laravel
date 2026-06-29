@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EsSalud</string>
+    <string name="title_activity_main">EsSalud</string>
+    <string name="package_name">pe.essalud.app</string>
+    <string name="custom_url_scheme">pe.essalud.app</string>
+</resources>
