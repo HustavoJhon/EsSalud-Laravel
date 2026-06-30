@@ -190,37 +190,46 @@
     </div>
 
     <!-- Mobile bottom navigation -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-30 flex items-center justify-around py-2 safe-area-bottom">
-        <a href="{{ route('home') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('home') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"></path>
-            </svg>
-            Inicio
-        </a>
-        <a href="{{ route('procedures.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('procedures.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            Trámites
-        </a>
-        <a href="{{ route('chat.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('chat.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-            </svg>
-            Chat
-        </a>
-        <a href="{{ route('faq.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('faq.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            FAQ
-        </a>
-        <a href="{{ route('news.index') }}" class="flex flex-col items-center text-xs {{ request()->routeIs('news.*') ? 'text-primary-600' : 'text-gray-500' }} px-2 py-1">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-            </svg>
-            Noticias
-        </a>
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 safe-area-bottom bg-white border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+        <div class="flex items-center justify-around h-16">
+            <a href="{{ route('home') }}"
+               class="flex flex-col items-center justify-center h-full min-w-[3rem] px-2 {{ request()->routeIs('home') ? 'bottom-nav-active' : 'text-gray-400' }} touch-feedback-light">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/>
+                </svg>
+                <span class="text-[10px] mt-0.5 font-medium">Inicio</span>
+            </a>
+            <a href="{{ route('procedures.index') }}"
+               class="flex flex-col items-center justify-center h-full min-w-[3rem] px-2 {{ request()->routeIs('procedures.*') && !request()->routeIs('procedures.create') ? 'bottom-nav-active' : 'text-gray-400' }} touch-feedback-light">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="text-[10px] mt-0.5 font-medium">Trámites</span>
+            </a>
+            <a href="{{ route('chat.index') }}"
+               class="flex flex-col items-center justify-center h-full min-w-[3rem] px-2 -mt-4 relative">
+                <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center shadow-lg shadow-primary-600/30 active:scale-90 transition-transform duration-150 {{ request()->routeIs('chat.*') ? 'ring-4 ring-primary-200' : '' }}">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                    </svg>
+                </div>
+                <span class="text-[10px] mt-1 font-medium {{ request()->routeIs('chat.*') ? 'text-primary-600' : 'text-gray-400' }}">Chat</span>
+            </a>
+            <a href="{{ route('procedures.create') }}"
+               class="flex flex-col items-center justify-center h-full min-w-[3rem] px-2 text-gray-400 touch-feedback-light">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="text-[10px] mt-0.5 font-medium">Nuevo</span>
+            </a>
+            <button onclick="toggleMoreMenu()"
+                    class="flex flex-col items-center justify-center h-full min-w-[3rem] px-2 {{ request()->routeIs('faq.*') || request()->routeIs('news.*') || request()->routeIs('documents.*') || request()->routeIs('admin.*') || request()->routeIs('profile') ? 'bottom-nav-active' : 'text-gray-400' }} touch-feedback-light">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                </svg>
+                <span class="text-[10px] mt-0.5 font-medium">Más</span>
+            </button>
+        </div>
     </nav>
 
     @stack('scripts')
