@@ -42,9 +42,12 @@ class ChatService
     {
         $startTime = microtime(true);
 
+        // 0. Check conversation context: what was the last bot topic?
+        $lastBotTopic = $this->detectBotTopic($session);
+
         // 1. Fast keyword match on FAQs
-        $faqResult = $this->matchFaqKeywords($question);
-        if ($faqResult && $faqResult['score'] >= 0.35) {
+        $faqResult = $this->matchFaqKeywords($question, $lastBotTopic);
+        if ($faqResult) {
             return [
                 'answer' => $faqResult['answer'],
                 'sources' => [['title' => $faqResult['question'], 'url' => null, 'score' => round($faqResult['score'], 2)]],
@@ -88,7 +91,39 @@ class ChatService
         ];
     }
 
-    protected function matchFaqKeywords(string $question): ?array
+    protected function detectBotTopic(ChatSession $session): ?string
+    {
+        $lastBotMsg = $session->messages()
+            ->where('role', 'assistant')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$lastBotMsg) return null;
+
+        $text = mb_strtolower($lastBotMsg->content ?? '');
+
+        $topics = [
+            'lactancia' => ['lactancia','lactante','amamantar','subsidio por lactancia','cero tramite'],
+            'maternidad' => ['maternidad','embarazo','gestante','prenatal','postnatal','subsidio por maternidad'],
+            'afiliacion' => ['afiliar','afiliacion','inscribir','derechohabiente'],
+            'incapacidad' => ['incapacidad','itt','enfermedad','accidente'],
+            'cita' => ['cita','consultorio','medico','consulta','atencion'],
+            'reembolso' => ['reembolso','devolucion','comprobante'],
+            'subsanacion' => ['subsanacion','subsanar','observaciones','corregir'],
+        ];
+
+        foreach ($topics as $topic => $keywords) {
+            foreach ($keywords as $kw) {
+                if (mb_strpos($text, $kw) !== false) {
+                    return $topic;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function matchFaqKeywords(string $question, ?string $botTopic = null): ?array
     {
         $questionLower = $this->normalizeAccents(mb_strtolower($question));
         $questionWords = $this->extractWords($questionLower);
@@ -156,6 +191,11 @@ class ChatService
             $qScore = count($expandedWords) > 0 ? ($qMatches / count($expandedWords)) * 0.3 : 0;
             $score = $kwScore + $qScore;
 
+            // Bonus for topic continuity: boost FAQ if it matches the previous bot topic
+            if ($botTopic && mb_strpos($faqQuestionLower, $botTopic) !== false) {
+                $score *= 1.3;
+            }
+
             if ($score > $bestScore) {
                 $bestScore = $score;
                 $bestFaq = [
@@ -166,7 +206,14 @@ class ChatService
             }
         }
 
-        return $bestFaq;
+        // Raise threshold for short questions (<= 3 words) to avoid false positives
+        $threshold = count($questionWords) <= 3 ? 0.55 : 0.35;
+
+        if ($bestFaq && $bestFaq['score'] >= $threshold) {
+            return $bestFaq;
+        }
+
+        return null;
     }
 
     protected function normalizeAccents(string $text): string
