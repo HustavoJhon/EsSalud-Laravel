@@ -128,6 +128,10 @@ class ChatService
         $questionLower = $this->normalizeAccents(mb_strtolower($question));
         $questionWords = $this->extractWords($questionLower);
 
+        if (empty($questionWords)) {
+            return null;
+        }
+
         // Expand question with synonyms
         $expandedWords = $questionWords;
         foreach ($this->synonyms as $synGroup) {
@@ -139,9 +143,12 @@ class ChatService
             }
         }
 
+        $expandedWords = array_values(array_unique($expandedWords));
+
         $faqs = Cache::remember('active_faqs_keywords', 300, function () {
             return Faq::where('is_active', true)
                 ->whereNotNull('keywords')
+                ->where('keywords', '!=', '')
                 ->get(['id', 'question', 'answer', 'keywords']);
         });
 
