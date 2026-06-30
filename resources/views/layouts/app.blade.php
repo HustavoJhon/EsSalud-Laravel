@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>@yield('title', 'EsSalud') - Plataforma de Trámites</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -15,7 +15,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen pb-16 md:pb-0" x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
+<body class="bg-gray-50 min-h-screen pb-20 md:pb-0" x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
       @sidebar-toggle.window="sidebarCollapsed = !sidebarCollapsed">
     <div class="flex h-screen overflow-hidden">
     <!-- Mobile sidebar backdrop -->
