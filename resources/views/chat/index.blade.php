@@ -235,7 +235,7 @@
 <script>
 function chatApp() {
     return {
-        sessions: @json($sessions->toArray()),
+        sessions: @json($sessions->items()),
         activeSession: @json($activeSession?->id ?? null),
         activeSessionTitle: @json($activeSession?->title ?? null),
         messages: [],
@@ -371,7 +371,7 @@ function chatApp() {
                     headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 });
                 const data = await resp.json();
-                this.sessions = Array.isArray(data) ? data : (data.data || []);
+                this.sessions = (Array.isArray(data) ? data : (data.data || [])).filter(Boolean);
             } catch (e) {}
         },
 
