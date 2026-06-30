@@ -17,6 +17,8 @@ class ChatService
         'sobre','entre','desde','hasta','porque','cual','cuales','todo','todos',
         'esta','estan','este','ese','eso','the','and','for','with','una','por','mis',
         'tengo','necesito','saber','hacer','puedo','donde','cuanto','cuales','tiene',
+        'hola','gracias','buenos','dias','tardes','noches','buen','dia',
+        'porfa','ayuda','favor','ayudame','quisiera','queria','podria',
     ];
 
     // Synonym map to expand user queries
@@ -242,6 +244,10 @@ class ChatService
         $questionLower = $this->normalizeAccents(mb_strtolower($question));
         $questionWords = $this->extractWords($questionLower);
 
+        if (empty($questionWords)) {
+            return $results;
+        }
+
         // Expand with synonyms
         $expandedWords = $questionWords;
         foreach ($this->synonyms as $synGroup) {
@@ -253,8 +259,12 @@ class ChatService
             }
         }
 
-        // FAQ search — only include if at least 3 words match
-        $faqs = Faq::where('is_active', true)->get(['id','question','answer','keywords']);
+        $expandedWords = array_values(array_unique($expandedWords));
+
+        // FAQ search — only include if at least 3 words match, limited to 200
+        $faqs = Faq::where('is_active', true)
+            ->limit(200)
+            ->get(['id','question','answer','keywords']);
 
         $scoredFaqs = [];
         foreach ($faqs as $faq) {
@@ -305,6 +315,10 @@ class ChatService
                 }
             }
         } catch (\Exception $e) {
+            logger()->error('Qdrant search failed', [
+                'exception' => $e->getMessage(),
+                'question' => substr($question, 0, 200),
+            ]);
         }
 
         return array_slice($results, 0, 4);
