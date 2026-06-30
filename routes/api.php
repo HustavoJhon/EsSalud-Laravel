@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\Api\DocumentController as ApiDocumentController;
+use App\Http\Controllers\Api\ProcedureController as ApiProcedureController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProcedureController;
@@ -19,18 +20,18 @@ Route::prefix('v1')->group(function () {
             return response()->json($request->user()->load('roles'));
         });
 
-        Route::get('/procedures', [ProcedureController::class, 'apiIndex']);
-        Route::post('/procedures', [ProcedureController::class, 'apiStore']);
-        Route::get('/procedures/my', [ProcedureController::class, 'apiMy']);
-        Route::get('/procedures/types', [ProcedureController::class, 'apiTypes']);
-        Route::get('/procedures/statuses', [ProcedureController::class, 'apiStatuses']);
-        Route::get('/procedures/{procedure}', [ProcedureController::class, 'apiShow']);
-        Route::get('/procedures/{procedure}/history', [ProcedureController::class, 'apiHistory']);
-        Route::get('/procedures/{procedure}/documents', [ProcedureController::class, 'apiDocuments']);
+        Route::get('/procedures', [ApiProcedureController::class, 'index']);
+        Route::post('/procedures', [ApiProcedureController::class, 'store']);
+        Route::get('/procedures/my', [ApiProcedureController::class, 'my']);
+        Route::get('/procedures/types', [ApiProcedureController::class, 'types']);
+        Route::get('/procedures/statuses', [ApiProcedureController::class, 'statuses']);
+        Route::get('/procedures/{procedure}', [ApiProcedureController::class, 'show']);
+        Route::get('/procedures/{procedure}/history', [ApiProcedureController::class, 'history']);
+        Route::get('/procedures/{procedure}/documents', [ApiProcedureController::class, 'documents']);
 
-        Route::get('/documents', [DocumentController::class, 'apiIndex']);
-        Route::post('/documents', [DocumentController::class, 'apiStore']);
-        Route::get('/documents/{document}', [DocumentController::class, 'apiShow']);
+        Route::get('/documents', [ApiDocumentController::class, 'index']);
+        Route::post('/documents', [ApiDocumentController::class, 'store']);
+        Route::get('/documents/{document}', [ApiDocumentController::class, 'show']);
 
         Route::get('/news', [NewsController::class, 'apiIndex']);
         Route::get('/news/{news}', [NewsController::class, 'apiShow']);
