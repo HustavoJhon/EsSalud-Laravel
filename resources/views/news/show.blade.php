@@ -47,7 +47,7 @@
             {{-- Actions --}}
             <div class="mt-10 pt-6 border-t border-gray-100 flex flex-wrap items-center gap-3">
                 @can('news.update')
-                    <a href="{{ route('news.edit', $news) }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors">
+                    <a href="{{ route('news.edit', $news) }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors touch-feedback">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         Editar
                     </a>
@@ -55,7 +55,7 @@
                 @can('news.delete')
                     <form method="POST" action="{{ route('news.destroy', $news) }}" onsubmit="return confirm('¿Eliminar esta noticia?')" class="inline">
                         @csrf @method('DELETE')
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors">
+                        <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors touch-feedback">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             Eliminar
                         </button>
