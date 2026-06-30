@@ -40,4 +40,9 @@ return [
         'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
     ],
 
+    'qdrant' => [
+        'url' => env('QDRANT_URL', 'http://qdrant:6333'),
+        'collection' => env('QDRANT_COLLECTION', 'essalud_docs'),
+    ],
+
 ];
