@@ -3,8 +3,8 @@
 @section('page_title', 'Documento: ' . $document->original_name)
 @section('content')
 <div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow p-6">
-        <dl class="grid grid-cols-2 gap-4 text-sm">
+    <div class="bg-white rounded-lg shadow p-4 md:p-6">
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
                 <dt class="text-gray-500">Nombre Original</dt>
                 <dd class="font-medium">{{ $document->original_name }}</dd>
@@ -74,18 +74,18 @@
             </div>
         @endif
 
-        <div class="mt-6 flex space-x-3">
-            <a href="{{ route('documents.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Volver</a>
+        <div class="mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <a href="{{ route('documents.index') }}" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 text-center touch-feedback">Volver</a>
             @if(!$document->is_validated && Auth::user()->can('document.validate'))
                 <form method="POST" action="{{ route('documents.validate', $document) }}">
                     @csrf
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">Validar</button>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 w-full sm:w-auto touch-feedback">Validar</button>
                 </form>
             @endif
             <form method="POST" action="{{ route('documents.destroy', $document) }}" onsubmit="return confirm('¿Eliminar documento?')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700">Eliminar</button>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 w-full sm:w-auto touch-feedback">Eliminar</button>
             </form>
         </div>
     </div>
