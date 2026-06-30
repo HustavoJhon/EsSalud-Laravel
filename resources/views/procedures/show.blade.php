@@ -4,7 +4,7 @@
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold">Información del Trámite</h3>
                 <span class="inline-block px-3 py-1 text-sm font-medium rounded-full
@@ -16,9 +16,9 @@
                     {{ $procedure->status->name }}
                 </span>
             </div>
-            <dl class="grid grid-cols-2 gap-4 text-sm">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <dt class="text-gray-500">Tipo</dt>
+                    <dt class="text-gray-500">Tipo de Trámite</dt>
                     <dd class="font-medium">{{ $procedure->procedureType->name }}</dd>
                 </div>
                 <div>
@@ -50,7 +50,7 @@
             @endif
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <h3 class="text-lg font-semibold mb-4">Acciones</h3>
             <div class="flex flex-wrap gap-2">
                 @if($procedure->status->code === 'BORRADOR' && $procedure->user_id === Auth::id())
@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <h3 class="text-lg font-semibold mb-4">Historial</h3>
             <div class="space-y-4">
                 @foreach($procedure->histories as $history)
@@ -119,7 +119,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <h3 class="text-lg font-semibold mb-4">Comentarios</h3>
             <form method="POST" action="{{ route('procedures.comment', $procedure) }}" class="mb-6">
                 @csrf
@@ -153,7 +153,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <h3 class="text-lg font-semibold mb-4">Documentos</h3>
             @if($procedure->documents->isNotEmpty())
                 <div class="space-y-2 mb-4">
@@ -185,7 +185,7 @@
     </div>
 
     <div class="space-y-6">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-4 md:p-6">
             <h3 class="text-lg font-semibold mb-4">Subsanaciones</h3>
             @if($procedure->subsanaciones->isNotEmpty())
                 @foreach($procedure->subsanaciones as $sub)
