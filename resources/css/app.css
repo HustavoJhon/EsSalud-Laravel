@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer components {
+    .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .safe-area-top {
+        padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .bottom-nav-active {
+        @apply text-primary-600 relative;
+    }
+
+    .bottom-nav-active::before {
+        content: '';
+        @apply absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary-600 rounded-full;
+    }
+
+    .touch-feedback {
+        @apply active:scale-95 transition-transform duration-150;
+    }
+
+    .touch-feedback-light {
+        @apply active:opacity-70 transition-opacity duration-150;
+    }
+
+    .card-mobile {
+        @apply bg-white rounded-xl p-4 border border-gray-100 active:bg-gray-50 transition-colors duration-150;
+    }
+
+    @keyframes slide-up {
+        from { transform: translateY(100%); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+    .animate-slide-up {
+        animation: slide-up 0.2s ease-out;
+    }
+}
