@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class GenerateEmbeddings implements ShouldQueue
@@ -28,16 +29,31 @@ class GenerateEmbeddings implements ShouldQueue
     public function handle(OpenAIService $openai, QdrantService $qdrant): void
     {
         $document = $this->document->fresh();
-        $text = $document->ocr_text;
+        $text = $document->ocr_text ?? '';
 
-        if (empty($text)) {
+        if (empty(trim($text))) {
+            Log::info('GenerateEmbeddings skipped — empty OCR text', ['document_id' => $document->id]);
             return;
         }
 
-        $qdrant->ensureCollection();
+        try {
+            $qdrant->ensureCollection();
+        } catch (\Exception $e) {
+            Log::error('Failed to ensure Qdrant collection', [
+                'document_id' => $document->id,
+                'error' => $e->getMessage(),
+            ]);
+            $this->release(30);
+            return;
+        }
 
         $chunks = $this->chunkText($text, 1000);
         $totalChunks = count($chunks);
+
+        if ($totalChunks === 0) {
+            Log::info('GenerateEmbeddings — no chunks generated', ['document_id' => $document->id]);
+            return;
+        }
 
         $ragSource = RagSource::updateOrCreate(
             ['document_id' => $document->id],
@@ -53,16 +69,34 @@ class GenerateEmbeddings implements ShouldQueue
         $points = [];
 
         foreach ($chunks as $index => $chunk) {
-            $embedding = $openai->embedding($chunk);
+            try {
+                $embedding = $openai->embedding($chunk);
+            } catch (\Exception $e) {
+                Log::error('Embedding generation failed', [
+                    'document_id' => $document->id,
+                    'chunk_index' => $index,
+                    'error' => $e->getMessage(),
+                ]);
+                continue;
+            }
+
             $pointId = (string) Str::uuid();
 
-            DocumentEmbedding::create([
-                'document_id' => $document->id,
-                'chunk_index' => $index,
-                'content' => $chunk,
-                'embedding' => $embedding,
-                'qdrant_point_id' => $pointId,
-            ]);
+            try {
+                DocumentEmbedding::create([
+                    'document_id' => $document->id,
+                    'chunk_index' => $index,
+                    'content' => $chunk,
+                    'embedding' => $embedding,
+                    'qdrant_point_id' => $pointId,
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to store DocumentEmbedding', [
+                    'document_id' => $document->id,
+                    'error' => $e->getMessage(),
+                ]);
+                continue;
+            }
 
             $points[] = [
                 'id' => $pointId,
