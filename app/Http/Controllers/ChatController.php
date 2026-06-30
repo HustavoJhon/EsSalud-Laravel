@@ -42,7 +42,7 @@ class ChatController extends Controller
             $query->where('guest_id', session()->getId());
         }
 
-        $sessions = $query->latest()->get();
+        $sessions = $query->latest()->paginate(50);
         $activeSession = $sessions->first();
 
         return view('chat.index', compact('sessions', 'activeSession'));
@@ -73,10 +73,7 @@ class ChatController extends Controller
             $sessionId = $session->id;
         } else {
             $session = ChatSession::findOrFail($sessionId);
-            if (!Auth::check() && $session->guest_id !== session()->getId()) {
-                abort(403);
-            }
-            if (Auth::check() && $session->user_id !== Auth::id()) {
+            if ($session->user_id !== Auth::id() && $session->guest_id !== session()->getId()) {
                 abort(403);
             }
         }
@@ -126,18 +123,20 @@ class ChatController extends Controller
             $query->where('guest_id', session()->getId());
         }
 
-        $sessions = $query->latest()->get();
+        $sessions = $query->latest()->paginate(50);
         return response()->json($sessions);
+    }
+
+    protected function authorizeSessionAccess(ChatSession $session): void
+    {
+        if ($session->user_id !== Auth::id() && $session->guest_id !== session()->getId()) {
+            abort(403);
+        }
     }
 
     public function getHistory(ChatSession $session)
     {
-        if (!Auth::check() && $session->guest_id !== session()->getId()) {
-            abort(403);
-        }
-        if (Auth::check() && $session->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeSessionAccess($session);
 
         $messages = $session->messages()->orderBy('created_at')->get();
         return response()->json($messages);
@@ -145,12 +144,7 @@ class ChatController extends Controller
 
     public function deleteSession(ChatSession $session)
     {
-        if (!Auth::check() && $session->guest_id !== session()->getId()) {
-            abort(403);
-        }
-        if (Auth::check() && $session->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeSessionAccess($session);
 
         $session->update(['is_active' => false]);
         return response()->json(['message' => 'Sesión eliminada.']);
@@ -158,13 +152,7 @@ class ChatController extends Controller
 
     public function feedback(Request $request, ChatMessage $message)
     {
-        $session = $message->session;
-        if (!Auth::check() && $session->guest_id !== session()->getId()) {
-            abort(403);
-        }
-        if (Auth::check() && $session->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeSessionAccess($message->session);
 
         $validated = $request->validate([
             'helpful' => 'required|boolean',
