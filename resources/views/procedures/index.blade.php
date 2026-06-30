@@ -1,136 +1,132 @@
-@extends('layouts.public')
-@section('title', 'Preguntas Frecuentes')
+@extends('layouts.app')
+@section('title', 'Trámites')
+@section('page_title', 'Trámites')
 @section('content')
-{{-- Header --}}
-<section class="bg-gradient-to-br from-primary-800 to-primary-600 py-12 md:py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">Preguntas Frecuentes</h1>
-        <p class="text-primary-100 text-sm md:text-base max-w-xl mx-auto mb-6">Encuentra respuestas rápidas sobre trámites, subsidios, afiliaciones y más</p>
-        <form method="GET" action="{{ route('faq.index') }}" class="max-w-lg mx-auto flex gap-2">
-            <input type="text" name="search" value="{{ $search ?? '' }}"
-                class="flex-1 px-4 py-3 rounded-xl border-0 text-sm focus:ring-2 focus:ring-white/50 bg-white/10 text-white placeholder:text-primary-200 outline-none backdrop-blur"
-                placeholder="Buscar en 204 preguntas...">
-            <button type="submit" class="bg-white text-primary-700 px-5 py-3 rounded-xl font-medium text-sm hover:bg-primary-50 transition-colors">Buscar</button>
-            @if(request('search'))
-                <a href="{{ route('faq.index') }}" class="text-primary-200 hover:text-white text-sm self-center ml-1">✕</a>
-            @endif
-        </form>
-    </div>
-</section>
-
-{{-- Content --}}
-<section class="py-10 md:py-14">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        @if(isset($faqs) && $faqs->isNotEmpty())
-            <p class="text-sm text-gray-500 mb-6">Resultados para "{{ $search }}" — {{ $faqs->total() }} encontrados</p>
-            <div class="space-y-3">
-                @foreach($faqs as $faq)
-                    <div class="bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all duration-200" x-data="{ open: false }">
-                        <div @click="open = !open" class="px-4 md:px-5 py-4 cursor-pointer flex items-start justify-between gap-4 select-none touch-feedback-light">
-                            <div class="flex items-start gap-3 flex-1 min-w-0">
-                                <div class="w-8 h-8 bg-primary-50 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                                    <svg class="w-4 h-4 text-primary-600 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                                <div class="min-w-0">
-                                    <span class="font-medium text-gray-800 text-sm md:text-base" :class="open ? 'text-primary-700' : ''">{{ $faq->question }}</span>
-                                    @if($faq->category)
-                                        <span class="inline-block ml-2 text-xs bg-primary-50 text-primary-600 px-2 py-0.5 rounded-full">{{ $faq->category->name }}</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div x-show="open"
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0"
-                             x-transition:enter-end="opacity-100"
-                             class="px-4 md:px-5 pb-4 pl-14 md:pl-16">
-                            <p class="text-sm text-gray-600 leading-relaxed">{{ $faq->answer }}</p>
-                            <div class="flex items-center gap-4 mt-3 text-xs text-gray-400">
-                                <button onclick="event.preventDefault(); helpfulFaq({{ $faq->id }})" class="flex items-center gap-1 hover:text-green-500 transition-colors py-1.5 touch-feedback-light">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg> Útil ({{ $faq->helpful_count }})
-                                </button>
-                                <button onclick="event.preventDefault(); notHelpfulFaq({{ $faq->id }})" class="flex items-center gap-1 hover:text-red-500 transition-colors py-1.5 touch-feedback-light">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path></svg> No útil ({{ $faq->not_helpful_count }})
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+{{-- Filters --}}
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-5 mb-4">
+    <form method="GET" action="{{ route('procedures.index') }}" class="flex flex-wrap items-end gap-2 md:gap-3">
+        <div class="w-[110px] md:w-36">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Estado</label>
+            <select name="status" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                <option value="">Todos</option>
+                @foreach($statuses as $status)
+                    <option value="{{ $status->code }}" {{ request('status') == $status->code ? 'selected' : '' }}>{{ $status->name }}</option>
                 @endforeach
-            </div>
-            <div class="mt-8">{{ $faqs->links() }}</div>
-        @else
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <div class="lg:col-span-1">
-                    <div class="sticky top-20 space-y-1">
-                        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 pl-4">Categorías</div>
-                        @foreach($categories as $cat)
-                            @if($cat->faqs->isNotEmpty())
-                                <a href="#cat-{{ $cat->id }}" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-primary-50 hover:text-primary-700 transition-colors">
-                                    <span class="text-base">{{ match($cat->icon) { 'people' => '👥', 'pregnant_woman' => '🤰', 'child_care' => '👶', 'church' => '⚰️', 'paid' => '💰', 'local_hospital' => '🏥', 'description' => '📄', 'account_circle' => '👤', 'help' => '❓', default => '📌' } }}</span>
-                                    <span class="truncate">{{ $cat->name }}</span>
-                                </a>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
+            </select>
+        </div>
+        <div class="w-[130px] md:w-40">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Tipo</label>
+            <select name="type" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                <option value="">Todos</option>
+                @foreach($types as $type)
+                    <option value="{{ $type->code }}" {{ request('type') == $type->code ? 'selected' : '' }}>{{ $type->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 font-medium">Filtrar</button>
+            @if(request()->anyFilled(['status','type']))
+                <a href="{{ route('procedures.index') }}" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 self-end">Limpiar</a>
+            @endif
+        </div>
+        <div class="ml-auto self-end">
+            <a href="{{ route('procedures.create') }}" class="inline-flex items-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span class="hidden sm:inline">Nuevo Trámite</span>
+                <span class="sm:hidden">+</span>
+            </a>
+        </div>
+    </form>
+</div>
 
-                <div class="lg:col-span-4 space-y-10">
-                    @foreach($categories as $category)
-                        @if($category->faqs->isNotEmpty())
-                            <div id="cat-{{ $category->id }}">
-                                <div class="flex items-center gap-3 mb-4">
-                                    <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center text-xl shrink-0">
-                                        {{ match($category->icon) { 'people' => '👥', 'pregnant_woman' => '🤰', 'child_care' => '👶', 'church' => '⚰️', 'paid' => '💰', 'local_hospital' => '🏥', 'description' => '📄', 'account_circle' => '👤', 'help' => '❓', default => '📌' } }}
-                                    </div>
-                                    <div>
-                                        <h2 class="text-lg md:text-xl font-bold text-gray-900">{{ $category->name }}</h2>
-                                        <p class="text-xs text-gray-400">{{ $category->faqs->count() }} preguntas</p>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    @foreach($category->faqs as $faq)
-                                        <div class="bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all duration-200" x-data="{ open: false }">
-                                            <div @click="open = !open" class="px-4 md:px-5 py-4 cursor-pointer flex items-start justify-between gap-4 select-none touch-feedback-light">
-                                                <div class="flex items-start gap-3 flex-1 min-w-0">
-                                                    <svg class="w-5 h-5 text-gray-300 mt-0.5 shrink-0 transition-transform duration-200" :class="open ? 'rotate-180 text-primary-500' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                                    <span class="font-medium text-gray-800 text-sm md:text-base" :class="open ? 'text-primary-700' : ''">{{ $faq->question }}</span>
-                                                </div>
-                                            </div>
-                                            <div x-show="open"
-                                                 x-transition:enter="transition ease-out duration-200"
-                                                 x-transition:enter-start="opacity-0"
-                                                 x-transition:enter-end="opacity-100"
-                                                 class="px-4 md:px-5 pb-5 pl-11 md:pl-12">
-                                                <p class="text-sm text-gray-600 leading-relaxed border-l-2 border-primary-200 pl-4">{{ $faq->answer }}</p>
-                                                <div class="flex items-center gap-4 mt-3 text-xs text-gray-400">
-                                                    <button onclick="event.preventDefault(); helpfulFaq({{ $faq->id }})" class="flex items-center gap-1 hover:text-green-500 transition-colors py-1.5 touch-feedback-light">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg> Útil ({{ $faq->helpful_count }})
-                                                    </button>
-                                                    <button onclick="event.preventDefault(); notHelpfulFaq({{ $faq->id }})" class="flex items-center gap-1 hover:text-red-500 transition-colors py-1.5 touch-feedback-light">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path></svg> No útil ({{ $faq->not_helpful_count }})
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-            </div>
-        @endif
+{{-- Desktop Table --}}
+<div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-100 text-sm">
+            <thead class="bg-gray-50 text-left text-gray-500 font-medium">
+                <tr>
+                    <th class="px-5 py-3 w-16">ID</th>
+                    <th class="px-5 py-3">Tipo</th>
+                    <th class="px-5 py-3">Estado</th>
+                    <th class="px-5 py-3">Usuario</th>
+                    <th class="px-5 py-3">Fecha</th>
+                    <th class="px-5 py-3 text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @forelse($procedures as $procedure)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-5 py-3.5 text-gray-400">#{{ $procedure->id }}</td>
+                    <td class="px-5 py-3.5">
+                        <div class="font-medium text-gray-800">{{ $procedure->procedureType->name }}</div>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <span class="inline-block px-2.5 py-1 text-xs font-medium rounded-full
+                            @if($procedure->status->code === 'APROBADO') bg-green-100 text-green-700
+                            @elseif($procedure->status->code === 'RECHAZADO') bg-red-100 text-red-700
+                            @elseif($procedure->status->code === 'SUBSANACION') bg-orange-100 text-orange-700
+                            @elseif($procedure->status->code === 'CANCELADO') bg-gray-100 text-gray-600
+                            @elseif(in_array($procedure->status->code, ['PENDIENTE','EN_REVISION','RADICADO','EVALUACION'])) bg-blue-100 text-blue-700
+                            @else bg-gray-100 text-gray-600 @endif">
+                            {{ $procedure->status->name }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3.5 text-gray-500">{{ $procedure->user->full_name ?? $procedure->user->name }}</td>
+                    <td class="px-5 py-3.5 text-gray-400 text-xs whitespace-nowrap">{{ $procedure->created_at->format('d/m/Y H:i') }}</td>
+                    <td class="px-5 py-3.5 text-right">
+                        <a href="{{ route('procedures.show', $procedure) }}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">Ver</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="px-5 py-12 text-center">
+                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <p class="text-gray-400 font-medium">No se encontraron trámites</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</section>
+</div>
 
-@push('scripts')
-<script>
-async function helpfulFaq(id) {
-    try { await fetch(`/faq/${id}/helpful`, { method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'} }); } catch(e) {}
-}
-async function notHelpfulFaq(id) {
-    try { await fetch(`/faq/${id}/not-helpful`, { method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'} }); } catch(e) {}
-}
-</script>
-@endpush
+{{-- Mobile Cards --}}
+<div class="md:hidden space-y-3">
+    @forelse($procedures as $procedure)
+    <a href="{{ route('procedures.show', $procedure) }}" class="block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow active:scale-[0.99]">
+        <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-800 text-sm truncate">{{ $procedure->procedureType->name }}</h3>
+                <p class="text-xs text-gray-400 mt-0.5">#{{ $procedure->id }} · {{ $procedure->created_at->format('d/m/Y H:i') }}</p>
+            </div>
+            <span class="inline-block px-2.5 py-1 text-xs font-medium rounded-full shrink-0
+                @if($procedure->status->code === 'APROBADO') bg-green-100 text-green-700
+                @elseif($procedure->status->code === 'RECHAZADO') bg-red-100 text-red-700
+                @elseif($procedure->status->code === 'SUBSANACION') bg-orange-100 text-orange-700
+                @elseif($procedure->status->code === 'CANCELADO') bg-gray-100 text-gray-600
+                @else bg-blue-100 text-blue-700 @endif">
+                {{ $procedure->status->name }}
+            </span>
+        </div>
+        <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-500">{{ $procedure->user->full_name ?? $procedure->user->name }}</span>
+            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </div>
+    </a>
+    @empty
+    <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <p class="text-gray-400 font-medium">No se encontraron trámites</p>
+        <a href="{{ route('procedures.create') }}" class="inline-block mt-2 text-primary-600 text-sm font-medium">Crear primer trámite</a>
+    </div>
+    @endforelse
+</div>
+
+<div class="mt-4">
+    {{ $procedures->links() }}
+</div>
 @endsection
